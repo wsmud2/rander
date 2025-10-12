@@ -1,19 +1,28 @@
-/* --- 全局和布局样式 --- */
-:root {
-    --bg-color: #1e1e1e;
-    --panel-bg-color: #252526;
-    --border-color: #3c3c3c;
-    --text-color: #d4d4d4;
-    --primary-color: #007acc;
-    --primary-hover-color: #005a9e;
+/* layout.css - 专门用于页面布局，与 ws.css 协同工作 */
+
+/* --- 基础布局调整 --- */
+/* ws.css 中 body 的 overflow:hidden 不适合此布局，我们进行覆盖 */
+html, body {
+    height: 100%;
+    overflow: visible; /* 允许在需要时出现滚动条 */
 }
 
+body {
+    display: flex;
+    flex-direction: column; /* 让 body 成为一个 flex 容器，方便 main-container 撑满 */
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* --- 主要容器 --- */
 .main-container {
-    max-width: 1400px;
+    width: 100%;
+    max-width: 1600px; /* 限制最大宽度，在大屏幕上更美观 */
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 40px); /* 视口高度减去 body 的 padding */
+    flex-grow: 1; /* 占据 body 内所有剩余空间 */
+    min-height: 0; /* flex 布局技巧，防止溢出 */
 }
 
 .main-header {
@@ -21,88 +30,90 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
-    flex-shrink: 0; /* 防止头部被压缩 */
+    flex-shrink: 0;
+    border-bottom: 1px solid #333; /* 添加一条分割线，适应深色主题 */
+    padding-bottom: 15px;
 }
 
 .main-title {
     margin: 0;
     font-size: 1.5em;
+    color: #00ff00; /* 标题使用更亮的绿色 */
 }
 
-/* --- 编辑器容器和面板 --- */
+/* --- 编辑器和面板 --- */
 .editor-container {
     display: flex;
     gap: 20px;
-    flex-grow: 1; /* 占据剩余的所有空间 */
-    min-height: 0; /* flex 布局中的重要技巧，防止子元素溢出 */
+    flex-grow: 1;
+    min-height: 0;
 }
 
 .panel {
-    flex: 1; /* 每个面板占据一半空间 */
+    flex: 1;
     display: flex;
     flex-direction: column;
-    background-color: var(--panel-bg-color);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
+    background-color: #0a0a0a; /* 比纯黑稍亮一点，以区分层次 */
+    border: 1px solid #333;
+    border-radius: 4px;
     padding: 15px;
-    overflow: hidden; /* 防止内容溢出圆角 */
 }
 
 .panel h2 {
     margin-top: 0;
     margin-bottom: 15px;
     font-size: 1.2em;
-    color: #cccccc;
-    flex-shrink: 0;
+    color: #ccc; /* 副标题颜色 */
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
 }
 
 /* --- 输入框和预览区 --- */
 #input-area,
 #output-area {
     width: 100%;
-    flex-grow: 1; /* 占据面板内所有剩余垂直空间 */
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    border: 1px solid var(--border-color);
+    flex-grow: 1;
+    background-color: #000000; /* 使用纯黑背景 */
+    color: inherit; /* 继承 body 的绿色字体 */
+    border: 1px solid #2a2a2a;
     border-radius: 4px;
     padding: 10px;
-    font-family: "Courier New", Courier, monospace; /* 使用等宽字体 */
+    font-family: "Courier New", Courier, monospace; /* 使用等宽字体更适合代码/MUD文本 */
     font-size: 16px;
-    resize: none; /* 禁止用户调整大小 */
-    box-sizing: border-box; /* 确保 padding 不会影响宽度 */
+    resize: none;
+    box-sizing: border-box;
 }
 
 #output-area {
-    overflow-y: auto; /* 当内容过多时显示滚动条 */
-    white-space: pre-wrap; /* 保持 pre 标签的格式但允许自动换行 */
+    overflow-y: auto;
+    white-space: pre-wrap;
     word-break: break-all;
 }
 
 .instructions {
     margin-top: 10px;
     font-size: 0.8em;
-    color: #888;
-    flex-shrink: 0;
+    color: #666; /* 说明文字用灰色 */
 }
 
-/* --- 按钮样式 --- */
+/* --- 按钮样式 (MUD 风格) --- */
 #toggle-view-btn {
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
+    background-color: #222;
+    color: #00ff00; /* 继承或使用亮绿色 */
+    border: 1px solid #444;
+    padding: 8px 16px;
+    border-radius: 4px;
     cursor: pointer;
     font-size: 1em;
-    font-weight: bold;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s, border-color 0.2s;
 }
 
 #toggle-view-btn:hover {
-    background-color: var(--primary-hover-color);
+    background-color: #333;
+    border-color: #666;
 }
 
-/* --- 全屏预览模式的样式 --- */
+/* --- 全屏预览模式 --- */
 .editor-container.full-view-mode #input-panel {
-    display: none; /* 在全屏模式下隐藏输入面板 */
+    display: none;
 }
