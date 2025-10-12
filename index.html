@@ -4,9 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MUD 风格文本实时渲染器</title>
-    <!-- 引用原版游戏的核心样式，以继承字体和基础颜色 -->
+    <!-- 这两个文件必须保留 -->
     <link rel="stylesheet" href="dist/ws.css">
-    <!-- 引用我们自己的布局和MUD标签增强样式 -->
     <link rel="stylesheet" href="dist/style.css">
 </head>
 <body>
@@ -26,7 +25,7 @@
 <blk>当装备为基本内功时：
 臂力：+335
 身法：+335
-根骨：+335
+根骨：+33-35
 内力上限：+300000
 黄牛针对：+9999999
 唯一：将你内力的75%转化为气血</blk>
@@ -54,7 +53,12 @@
             </div>
             <div class="panel" id="output-panel">
                 <h2>实时预览</h2>
-                <div id="output-wrapper" class="dialog-content dialog-score">
+                <!-- 
+                  【【【核心修改】】】
+                  在这里加上 ws.css 需要的容器类名 "dialog-score"。
+                  这样，ws.css 里面所有 .dialog-score hic {...} 的规则就全部生效了。
+                -->
+                <div id="output-wrapper" class="dialog-score">
                     <div id="output-area"></div>
                 </div>
             </div>
