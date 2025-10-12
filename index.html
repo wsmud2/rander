@@ -4,19 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MUD 风格文本渲染器</title>
-    <style>dist/ws.css</style>
+    <link rel="stylesheet" href="dist/ws.css">
 </head>
 <body>
 
     <div class="main-container">
         <div class="main-header">
             <h1 class="main-title">MUD 风格文本实时渲染器</h1>
-            <!-- 新增：切换视图按钮 -->
             <button id="toggle-view-btn">全屏预览</button>
         </div>
         
         <div class="editor-container">
-            <!-- 给输入面板添加ID -->
             <div class="panel" id="input-panel">
                 <h2>输入内容</h2>
                 <textarea id="input-area"><ord>小无相功</ord>
@@ -48,37 +46,7 @@
         </div>
     </div>
 
-    <script>
-        // 获取元素
-        const inputArea = document.getElementById('input-area');
-        const outputArea = document.getElementById('output-area');
-        const toggleBtn = document.getElementById('toggle-view-btn');
-        const editorContainer = document.querySelector('.editor-container');
-
-        // 渲染函数
-        function renderOutput() {
-            outputArea.innerHTML = inputArea.value;
-        }
-
-        // 监听输入
-        inputArea.addEventListener('input', renderOutput);
-
-        // --- 新增：切换按钮的事件监听 ---
-        toggleBtn.addEventListener('click', () => {
-            // 切换 'full-view-mode' 类
-            const isNowFullView = editorContainer.classList.toggle('full-view-mode');
-
-            // 根据当前状态更新按钮文本
-            if (isNowFullView) {
-                toggleBtn.textContent = '返回编辑';
-            } else {
-                toggleBtn.textContent = '全屏预览';
-            }
-        });
-
-        // 页面加载时首次渲染
-        document.addEventListener('DOMContentLoaded', renderOutput);
-    </script>
+    <script src="rander.js" defer></script>
 
 </body>
 </html>
