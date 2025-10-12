@@ -35,10 +35,12 @@ body {
     padding-bottom: 15px;
 }
 
+/* --- 颜色优化 --- */
+
 .main-title {
     margin: 0;
     font-size: 1.5em;
-    color: #00ff00; /* 标题使用更亮的绿色 */
+    color: #ffff00; /* 改为 ws.css 中 room-title 使用的黄色，更醒目且经典 */
 }
 
 /* --- 编辑器和面板 --- */
@@ -63,7 +65,7 @@ body {
     margin-top: 0;
     margin-bottom: 15px;
     font-size: 1.2em;
-    color: #ccc; /* 副标题颜色 */
+    color: #808000; /* 副标题使用 ws.css 中 dialog-title 的橄榄绿色，与主题更协调 */
     border-bottom: 1px solid #333;
     padding-bottom: 10px;
 }
@@ -78,7 +80,10 @@ body {
     border: 1px solid #2a2a2a;
     border-radius: 4px;
     padding: 10px;
-    font-family: "Courier New", Courier, monospace; /* 使用等宽字体更适合代码/MUD文本 */
+    /* 
+     * 【修改点 1】: 移除固定的等宽字体，使用 inherit 继承 ws.css 中 body 的字体
+     */
+    font-family: inherit; 
     font-size: 16px;
     resize: none;
     box-sizing: border-box;
@@ -99,7 +104,7 @@ body {
 /* --- 按钮样式 (MUD 风格) --- */
 #toggle-view-btn {
     background-color: #222;
-    color: #00ff00; /* 继承或使用亮绿色 */
+    color: #ffff00; /* 按钮文字颜色与主标题保持一致 */
     border: 1px solid #444;
     padding: 8px 16px;
     border-radius: 4px;
@@ -107,6 +112,7 @@ body {
     font-size: 1em;
     transition: background-color 0.2s, border-color 0.2s;
 }
+
 
 #toggle-view-btn:hover {
     background-color: #333;
@@ -116,4 +122,29 @@ body {
 /* --- 全屏预览模式 --- */
 .editor-container.full-view-mode #input-panel {
     display: none;
+}
+
+
+/* 
+ * 【修改点 2】: 添加移动端适配样式 
+ * 当屏幕宽度小于等于 768px 时生效
+ */
+@media (max-width: 768px) {
+    body {
+        padding: 10px; /* 在小屏幕上减小边距 */
+    }
+
+    .main-header {
+        flex-direction: column; /* 标题和按钮垂直排列 */
+        align-items: flex-start; /* 左对齐 */
+        gap: 10px; /* 增加垂直间距 */
+    }
+
+    .main-title {
+        font-size: 1.2em; /* 适当减小标题字号 */
+    }
+
+    .editor-container {
+        flex-direction: column; /* 核心改动：将左右布局改为上下布局 */
+    }
 }
