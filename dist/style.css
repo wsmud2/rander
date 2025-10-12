@@ -169,6 +169,7 @@ body {
 #output-area .blk { color: var(--color-blk); }
 
 /* <line> 标签的特殊样式 */
+/*
 #output-area .line {
     display: block;
     text-align: center;
@@ -193,7 +194,7 @@ body {
     right: 0;
     color: #008080;
 }
-
+*/
 /* --- 8. 全屏预览模式 --- */
 .editor-container.full-view-mode #input-panel {
     display: none;
