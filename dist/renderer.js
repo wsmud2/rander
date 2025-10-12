@@ -1,7 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // 获取核心元素
     const sourceInput = document.getElementById('source-input');
     const renderOutput = document.getElementById('render-output');
+    
+    // 获取控制区域和切换按钮相关元素
+    const controlsContainer = document.getElementById('controls');
+    const toggleBtn = document.getElementById('toggle-controls-btn');
+    const toggleBtnText = toggleBtn.querySelector('.toggle-text');
 
+    // 示例文字
     const exampleText = `<hiz>天山六阳掌</hiz>
 逍遥派绝世武功
 逍遥派的天山六阳掌，绝招生死符让人谈虎色变。
@@ -18,17 +25,31 @@ document.addEventListener('DOMContentLoaded', () => {
     sourceInput.value = exampleText;
 
     /**
-     * 核心渲染函数
-     * 直接将输入框的文本作为HTML设置给<pre>标签
-     * 浏览器会自动解析其中的MUD标签，并应用 ws.css 中定义的样式
+     * 核心渲染函数 (保持不变)
+     * 将输入框的文本作为HTML设置给<pre>标签
      */
     function render() {
         renderOutput.innerHTML = sourceInput.value;
     }
 
-    // 监听输入框的 input 事件，实现实时更新
+    /**
+     * 新增：处理折叠/展开逻辑
+     */
+    toggleBtn.addEventListener('click', () => {
+        // 切换父容器的 'collapsed' 类
+        controlsContainer.classList.toggle('collapsed');
+        
+        // 检查当前是否为展开状态
+        const isExpanded = !controlsContainer.classList.contains('collapsed');
+        
+        // 更新按钮文本和无障碍属性
+        toggleBtnText.textContent = isExpanded ? '隐藏输入框' : '展开输入框';
+        toggleBtn.setAttribute('aria-expanded', isExpanded);
+    });
+
+    // 监听输入框的 input 事件，实现实时更新 (保持不变)
     sourceInput.addEventListener('input', render);
 
-    // 页面加载后立即渲染一次示例
+    // 页面加载后立即渲染一次示例 (保持不变)
     render();
 });
