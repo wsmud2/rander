@@ -2,29 +2,73 @@
 <html lang="zh-CN">
 
 <head>
-    <title>MUD 游戏模拟渲染</title>
+    <title>MUD 渲染模拟器</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <!-- 直接引用您提供的CSS文件 -->
+    <!-- 引用您提供的CSS文件 -->
     <link href="dist/ws.css" rel="stylesheet" />
     <style>
-        /* 补充样式，用于实现Flex布局和特定状态，以配合ws.css */
-        body,
-        html {
+        /* --- 补充和布局样式 --- */
+        html, body {
             height: 100%;
             overflow: hidden;
         }
 
-        .container {
+        #app-container {
             display: flex;
             flex-direction: column;
-            height: 100%;
+            height: 100vh; /* 占满整个视口高度 */
         }
 
-        .content-message {
-            flex: 1; /* 关键：让渲染区占据所有可用空间 */
+        #controls {
             padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background-color: #111;
+            border-top: 1px solid #333;
+        }
+
+        #source-input {
+            width: 100%;
+            height: 150px; /* 输入框高度 */
+            background-color: #222;
+            color: #ddd;
+            border: 1px solid #444;
+            border-radius: 4px;
+            padding: 8px;
+            font-family: monospace; /* 使用等宽字体方便查看原始文本 */
+            resize: vertical;
+        }
+
+        #control-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        #control-buttons button {
+            padding: 10px 20px;
+            background-color: #555;
+            color: #ddd;
+            border: 1px solid #222;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+        }
+        #control-buttons button:hover {
+            background-color: #666;
+        }
+        #render-btn {
+            flex-grow: 1; /* 让渲染按钮占据更多空间 */
+        }
+
+        /* --- 渲染区样式 --- */
+        .content-message {
+            flex: 1; /* 占据所有剩余空间 */
             overflow-y: auto;
+            padding: 15px;
             scroll-behavior: smooth;
         }
 
@@ -38,65 +82,49 @@
             background-color: black;
         }
 
-        .bottom-bar {
-            position: relative; /* 覆盖ws.css中的绝对定位，使其在文档流中 */
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-            padding: 5px;
-            margin-top: 0; /* 重置外边距 */
-        }
-
-        .chat-input {
-            flex: 1; /* 让输入区占据剩余空间 */
-            min-width: 150px; /* 在小屏幕上保持最小宽度 */
-        }
+        /* --- 自定义MUD颜色标签的CSS实现 --- */
+        /* 这些是ws.css中没有的，需要我们自己定义 */
+        hiz { color: #FF00FF; } /* 紫色 */
+        hic { color: #00FFFF; } /* 青色 */
+        hig { color: #00FF00; } /* 亮绿 */
+        hiy { color: #FFFF00; } /* 黄色 */
+        hir { color: #FF0000; } /* 红色 */
+        wht { color: #FFFFFF; } /* 白色 */
+        blk { color: #A9A9A9; } /* 暗灰色 (在黑色背景上可见) */
         
-        .sender-box {
-            width: 100%; /* 确保输入框填满其容器 */
-        }
-
-        /* 为用户输入的指令添加样式 */
-        .user-command {
-            color: #FFFF00; /* hiy 黄色 */
-        }
-
-        /* 自定义一个激活状态的样式 */
-        .act-item.active {
-            background-color: gray;
-            color: black;
-            border-color: #fff;
+        line {
+            display: block;
+            text-align: center;
+            border-top: 1px solid #555;
+            border-bottom: 1px solid #555;
+            color: #808080;
+            margin: 1em 0;
+            padding: 0.2em 0;
+            font-weight: bold;
         }
     </style>
 </head>
 
 <body>
-    <!-- 整体容器，使用ws.css中的.container类 -->
-    <div class="container">
-        <!-- 渲染区，使用ws.css中的.content-message类 -->
-        <div class="content-message"></div>
 
-        <!-- 控制区，使用ws.css中的.tool-bar和.bottom-bar类 -->
-        <div class="tool-bar bottom-bar">
-            <!-- 数据切换按钮，使用ws.css中的.act-item类 -->
-            <span class="act-item" data-type="messages">消息</span>
-            <span class="act-item" data-type="combat">战斗</span>
-            <span class="act-item" data-type="system">系统</span>
+    <div id="app-container">
+        <!-- 渲染区 -->
+        <div class="content-message">
+            <pre>这里是渲染结果区，请在下方输入框粘贴内容后点击“渲染”。</pre>
+        </div>
 
-            <!-- 输入区，结构参考了源文件中的.chat-input -->
-            <div class="chat-input">
-                <input class="sender-box" id="command-input" placeholder="在此输入指令..." autocomplete="off" />
+        <!-- 输入和控制区 -->
+        <div id="controls">
+            <textarea id="source-input" spellcheck="false"></textarea>
+            <div id="control-buttons">
+                <button id="render-btn">渲染</button>
+                <button id="fullscreen-btn">全屏</button>
             </div>
-            <span class="sender-btn" id="send-btn">发送</span>
-
-            <!-- 全屏按钮 -->
-            <span class="act-item" id="fullscreen-btn">全屏</span>
         </div>
     </div>
 
     <!-- 引用外部JS文件 -->
-    <script src="dist/ws_mock.js"></script>
-</body>
+    <script src="dist/renderer.js" defer></script>
 
+</body>
 </html>
