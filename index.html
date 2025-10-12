@@ -1,71 +1,102 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
+    <title>MUD 游戏模拟渲染</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MUD 风格文本实时渲染器</title>
-    <!-- 这两个文件必须保留 -->
-    <link rel="stylesheet" href="dist/ws.css">
-    <link rel="stylesheet" href="dist/style.css">
-</head>
-<body>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <!-- 直接引用您提供的CSS文件 -->
+    <link href="dist/ws.css" rel="stylesheet" />
+    <style>
+        /* 补充样式，用于实现Flex布局和特定状态，以配合ws.css */
+        body,
+        html {
+            height: 100%;
+            overflow: hidden;
+        }
 
-    <div class="main-container">
-        <div class="main-header">
-            <h1 class="main-title">MUD 风格文本实时渲染器</h1>
-            <button id="toggle-view-btn" class="mud-button">全屏预览</button>
-        </div>
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .content-message {
+            flex: 1; /* 关键：让渲染区占据所有可用空间 */
+            padding: 10px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        .content-message.fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            background-color: black;
+        }
+
+        .bottom-bar {
+            position: relative; /* 覆盖ws.css中的绝对定位，使其在文档流中 */
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 5px;
+            margin-top: 0; /* 重置外边距 */
+        }
+
+        .chat-input {
+            flex: 1; /* 让输入区占据剩余空间 */
+            min-width: 150px; /* 在小屏幕上保持最小宽度 */
+        }
         
-        <div class="editor-container">
-            <div class="panel" id="input-panel">
-                <h2>输入 MUD 文本</h2>
-                <textarea id="input-area" spellcheck="false"><ord>小无相功</ord>
-逍遥派灭世神功
-逍遥派的一门奇特武功，其主要特点是不着形相，无迹可寻，可以模仿别人的绝学
-<blk>当装备为基本内功时：
-臂力：+335
-身法：+335
-根骨：+33-35
-内力上限：+300000
-黄牛针对：+9999999
-唯一：将你内力的75%转化为气血</blk>
-<line>绝招</line>
-<hic>【无相】</hic>
-内力消耗：2040	出招时间：4秒	冷却时间：20秒
-模仿敌人的上一个绝招，效果是你小无相功等级的85%，如果你的小无相品阶不低于对方技能的品阶并且是武器技能，你将学会这个绝招
+        .sender-box {
+            width: 100%; /* 确保输入框填满其容器 */
+        }
 
-<hig>【无我】</hig>
-内力消耗：2040	出招时间：0.5秒	冷却时间：30秒
-使用你无相模仿并学会的绝招，效果是你小无相功等级的80%
+        /* 为用户输入的指令添加样式 */
+        .user-command {
+            color: #FFFF00; /* hiy 黄色 */
+        }
 
-<hiy>这是一个高亮黄色的例子。</hiy>
-<hir>这是一个高亮红色的例子。</hir>
-</textarea>
-                <div class="panel-footer">
-                    <div class="instructions">
-                        支持标签: &lt;ord&gt;, &lt;blk&gt;, &lt;hic&gt;, &lt;hig&gt;, &lt;hiy&gt;, &lt;hir&gt;, &lt;line&gt; 等
-                    </div>
-                    <div class="actions">
-                        <button id="copy-btn" class="mud-button-small">复制HTML</button>
-                        <button id="clear-btn" class="mud-button-small">清空</button>
-                    </div>
-                </div>
+        /* 自定义一个激活状态的样式 */
+        .act-item.active {
+            background-color: gray;
+            color: black;
+            border-color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 整体容器，使用ws.css中的.container类 -->
+    <div class="container">
+        <!-- 渲染区，使用ws.css中的.content-message类 -->
+        <div class="content-message"></div>
+
+        <!-- 控制区，使用ws.css中的.tool-bar和.bottom-bar类 -->
+        <div class="tool-bar bottom-bar">
+            <!-- 数据切换按钮，使用ws.css中的.act-item类 -->
+            <span class="act-item" data-type="messages">消息</span>
+            <span class="act-item" data-type="combat">战斗</span>
+            <span class="act-item" data-type="system">系统</span>
+
+            <!-- 输入区，结构参考了源文件中的.chat-input -->
+            <div class="chat-input">
+                <input class="sender-box" id="command-input" placeholder="在此输入指令..." autocomplete="off" />
             </div>
-            <div class="panel" id="output-panel">
-                <h2>实时预览</h2>
-                <!-- 
-                  【【【核心修改】】】
-                  在这里加上 ws.css 需要的容器类名 "dialog-score"。
-                  这样，ws.css 里面所有 .dialog-score hic {...} 的规则就全部生效了。
-                -->
-                <div id="output-wrapper" class="dialog-score">
-                    <div id="output-area"></div>
-                </div>
-            </div>
+            <span class="sender-btn" id="send-btn">发送</span>
+
+            <!-- 全屏按钮 -->
+            <span class="act-item" id="fullscreen-btn">全屏</span>
         </div>
     </div>
 
-    <script src="dist/rander.js" defer></script>
-
+    <!-- 引用外部JS文件 -->
+    <script src="dist/ws_mock.js"></script>
 </body>
+
 </html>
