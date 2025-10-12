@@ -187,9 +187,11 @@ body {
 }
 #output-area .line::before {
     left: 0;
+    color: #008080;
 }
 #output-area .line::after {
     right: 0;
+    color: #008080;
 }
 
 /* --- 8. 全屏预览模式 --- */
