@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const sourceInput = document.getElementById('source-input');
     const renderOutput = document.getElementById('render-output');
-    const renderBtn = document.getElementById('render-btn');
 
     const exampleText = `<hiz>天山六阳掌</hiz>
 逍遥派绝世武功
@@ -27,7 +26,8 @@ document.addEventListener('DOMContentLoaded', () => {
         renderOutput.innerHTML = sourceInput.value;
     }
 
-    renderBtn.addEventListener('click', render);
+    // 监听输入框的 input 事件，实现实时更新
+    sourceInput.addEventListener('input', render);
 
     // 页面加载后立即渲染一次示例
     render();
