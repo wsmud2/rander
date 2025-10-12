@@ -1,22 +1,6 @@
 /* style.css - 专门用于页面布局和MUD样式增强 */
 
 /* --- 1. CSS 变量定义 --- */
-:root {
-    --mud-bg-color: #000000;
-    --mud-panel-bg-color: #0a0a0a;
-    --mud-border-color: #333;
-    --mud-main-title-color: #ffff00; /* 亮黄色 */
-    --mud-sub-title-color: #808000;  /* 橄榄绿 */
-    --mud-default-text-color: #008000; /* 默认绿色 */
-
-    /* MUD 效果颜色 */
-    --color-hic: #00ffff; /* 高亮青色 */
-    --color-hig: #00ff00; /* 高亮绿色 */
-    --color-hiy: #ffff00; /* 高亮黄色 */
-    --color-hir: #ff0000; /* 高亮红色 */
-    --color-ord: #c0c0c0; /* 普通灰色 */
-    --color-blk: #555555; /* 黑色/暗灰色 */
-}
 
 /* --- 2. 基础布局调整 --- */
 html, body {
