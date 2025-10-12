@@ -42,7 +42,8 @@
             </div>
             <div class="panel" id="output-panel">
                 <h2>实时预览</h2>
-                <pre id="output-area"></pre>
+                <!-- 【优化点】将 <pre> 换成 <div>，因为JS会手动处理换行 -->
+                <div id="output-area"></div>
             </div>
         </div>
     </div>
