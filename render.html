@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>MUD 渲染模拟器 (优化版)</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <!-- 唯一的样式来源 -->
+    <link href="dist/ws.css" rel="stylesheet" />
+    <style>
+        /* --- CSS 变量定义 (方便主题管理) --- */
+        :root {
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-mono: 'Menlo', 'Consolas', 'SF Mono', 'Fira Code', 'monospace';
+            
+            --bg-color: #1a1b26;          /* 主背景色 */
+            --surface-color: #24283b;     /* UI元素背景色 (如输入框) */
+            --controls-bg-color: #1f202e; /* 控制区域背景色 */
+            --border-color: #414868;      /* 边框颜色 */
+            --text-color: #c0caf5;        /* 主要文字颜色 */
+            --text-secondary-color: #a9b1d6; /* 次要文字颜色 */
+            --accent-color: #7aa2f7;       /* 强调色 (按钮、聚焦) */
+            --accent-hover-color: #9eceff; /* 强调色悬停 */
+        }
+
+        /* --- 全局重置与基础样式 --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-sans);
+            font-size: 16px;
+        }
+
+        /* --- 页面布局 --- */
+        #app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        .header {
+            padding: 12px 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-secondary-color);
+            background-color: var(--controls-bg-color);
+            border-bottom: 1px solid var(--border-color);
+            text-align: center;
+            flex-shrink: 0; /* 防止头部被压缩 */
+        }
+
+        .content-message {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: var(--bg-color);
+        }
+
+        .content-message pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        #controls {
+            padding: 15px;
+            background-color: var(--controls-bg-color);
+            border-top: 1px solid var(--border-color);
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.2);
+            flex-shrink: 0; /* 防止控制区被压缩 */
+        }
+
+        /* --- UI 组件样式 --- */
+        #source-input {
+            width: 100%;
+            height: 120px;
+            background-color: var(--surface-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            resize: vertical;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        #source-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(122, 162, 247, 0.3);
+        }
+
+        #render-btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 12px;
+            background-color: var(--accent-color);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        #render-btn:hover {
+            background-color: var(--accent-hover-color);
+        }
+
+        #render-btn:active {
+            transform: scale(0.99);
+        }
+
+        /* --- 美化滚动条 (适用于 Webkit 内核浏览器) --- */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--surface-color);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-color);
+        }
+    </style>
+</head>
+<body>
+    <div id="app-container">
+        <!-- 新增一个清晰的头部 -->
+        <header class="header">MUD 渲染模拟器</header>
+        
+        <!-- 渲染输出区域 (结构不变) -->
+        <div class="content-message">
+            <pre id="render-output"></pre>
+        </div>
+        
+        <!-- 控制区域 (结构不变) -->
+        <div id="controls">
+            <textarea id="source-input" spellcheck="false" placeholder="在此粘贴从游戏复制的原始文本..."></textarea>
+            <button id="render-btn">渲染</button>
+        </div>
+    </div>
+    
+    <!-- JS 引用不变 -->
+    <script src="dist/renderer.js" defer></script>
+</body>
+</html>
