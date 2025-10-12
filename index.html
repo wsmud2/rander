@@ -1,84 +1,195 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <title>MUD 渲染模拟器 (最终修正版)</title>
+    <title>MUD 渲染模拟器</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <!-- 唯一的样式来源 -->
     <link href="dist/ws.css" rel="stylesheet" />
     <style>
-        /* 基础布局样式 */
-        html, body { height: 100%; overflow: hidden; }
-        #app-container { display: flex; flex-direction: column; height: 100vh; }
-        .content-message { flex: 1; overflow-y: auto; padding: 10px; }
-        .content-message pre { margin: 0; white-space: pre-wrap; font-family: inherit; font-size: inherit; }
-        
-        /* 控制区域样式 */
-        #controls { 
-            padding: 10px; 
-            background-color: #111; 
-            border-top: 1px solid #333; 
-            /* 添加过渡效果，使折叠更平滑 */
-            transition: all 0.3s ease;
-        }
-        
-        /* 输入框样式 */
-        #source-input { 
-            width: 100%; 
-            height: 120px; 
-            background-color: #222; 
-            color: #ddd; 
-            border: 1px solid #444; 
-            padding: 8px; 
-            font-family: monospace; 
-            resize: vertical; 
-            margin-top: 10px; /* 与按钮保持间距 */
+        :root {
+            --font-sans: "Microsoft YaHei UI", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-mono: "Microsoft YaHei UI", 'Menlo', 'Consolas', 'SF Mono', 'Fira Code', 'monospace';
+    
+            --bg-color: #000000;
+            --surface-color: #282828;
+            --controls-bg-color: #1a1c1d;
+            --border-color: #504945;
+            --text-color: #008000;
+            --text-secondary-color: #aaaaaa;
+            --accent-color: #fabd2f;
+            --accent-hover-color: #fecb4f;
         }
 
-        /* 新增：折叠/展开按钮的样式 */
+        /* --- 全局重置与基础样式 --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--controls-bg-color);
+            color: var(--text-color);
+            font-family: var(--font-sans);
+            font-size: 16px;
+        }
+
+        /* --- 页面布局 --- */
+        #app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100dvh;
+        }
+        
+        .header {
+            padding: 12px 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-secondary-color);
+            background-color: var(--controls-bg-color);
+            border-bottom: 1px solid var(--border-color);
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .content-message {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: var(--bg-color);
+        }
+
+        .content-message pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        #controls {
+            padding: 15px;
+            background-color: var(--controls-bg-color);
+            border-top: 1px solid var(--border-color);
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.3);
+            flex-shrink: 0;
+            transition: padding-top 0.3s ease;
+        }
+
+        /* --- UI 组件样式 --- */
+        #source-input {
+            width: 100%;
+            max-height: 120px; /* 使用 max-height 以支持动画 */
+            background-color: var(--surface-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px; /* 移动间距到输入框 */
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            resize: vertical;
+            /* 添加平滑过渡动画 */
+            transition: max-height 0.3s ease, padding 0.3s ease, opacity 0.2s ease, margin 0.3s ease, border-width 0.3s ease;
+            overflow: hidden; /* 配合 max-height 动画 */
+        }
+
+        #source-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(250, 189, 47, 0.25);
+        }
+
+        /* --- 新的折叠按钮样式 --- */
         #toggle-controls-btn {
             width: 100%;
             padding: 10px;
-            background-color: #555;
-            color: #ddd;
-            border: none;
+            background-color: var(--surface-color);
+            color: var(--text-secondary-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
             font-weight: bold;
+            font-size: 0.9rem;
             cursor: pointer;
-            text-align: center;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
-        /* 新增：当 controls 容器有 collapsed 类时的样式 */
+        #toggle-controls-btn:hover {
+            background-color: var(--border-color);
+            color: var(--text-color);
+        }
+
+        .toggle-arrow {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-left: 2px solid currentColor;
+            border-bottom: 2px solid currentColor;
+            transform: rotate(-45deg); /* 默认向下 (收起) */
+            transition: transform 0.3s ease;
+        }
+
+        /* --- 控制区域收起时的样式 --- */
         #controls.collapsed {
-            padding-top: 10px;
-            padding-bottom: 10px;
+            padding-top: 0;
         }
+        
         #controls.collapsed #source-input {
-            display: none; /* 隐藏输入框 */
+            max-height: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            margin-bottom: 0;
+            border-width: 0;
+            opacity: 0;
         }
 
+        #controls.collapsed .toggle-arrow {
+            transform: rotate(135deg); /* 向上 (展开) */
+        }
+
+
+        /* --- 美化滚动条 (适用于 Webkit 内核浏览器) --- */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--surface-color);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-color);
+        }
     </style>
 </head>
 <body>
     <div id="app-container">
-        <!-- 显示区域保持不变 -->
+        <header class="header">MUD 渲染模拟器</header>
+        
         <div class="content-message">
             <pre id="render-output"></pre>
         </div>
-
-        <!-- 控制区域结构修改 -->
+        
         <div id="controls">
-            <!-- 新增：折叠/展开按钮，以适配JS -->
+            <textarea id="source-input" spellcheck="false" placeholder="在此粘贴从游戏复制的原始文本..."></textarea>
+            <!-- 新的切换按钮 -->
             <button id="toggle-controls-btn" aria-expanded="true">
                 <span class="toggle-text">隐藏输入框</span>
+                <span class="toggle-arrow"></span>
             </button>
-            <!-- 输入框保持不变 -->
-            <textarea id="source-input" spellcheck="false" placeholder="在此粘贴从游戏复制的原始文本..."></textarea>
-            <!-- 移除：旧的渲染按钮 -->
-            <!-- <button id="render-btn">渲染</button> -->
         </div>
     </div>
-
-    <!-- JS引用保持不变 -->
+    
     <script src="dist/renderer.js" defer></script>
 </body>
 </html>
