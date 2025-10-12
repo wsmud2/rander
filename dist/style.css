@@ -1,28 +1,47 @@
-/* layout.css - 专门用于页面布局，与 ws.css 协同工作 */
+/* style.css - 专门用于页面布局和MUD样式增强 */
 
-/* --- 基础布局调整 --- */
-/* ws.css 中 body 的 overflow:hidden 不适合此布局，我们进行覆盖 */
+/* --- 1. CSS 变量定义 --- */
+:root {
+    --mud-bg-color: #000000;
+    --mud-panel-bg-color: #0a0a0a;
+    --mud-border-color: #333;
+    --mud-main-title-color: #ffff00; /* 亮黄色 */
+    --mud-sub-title-color: #808000;  /* 橄榄绿 */
+    --mud-default-text-color: #008000; /* 默认绿色 */
+
+    /* MUD 效果颜色 */
+    --color-hic: #00ffff; /* 高亮青色 */
+    --color-hig: #00ff00; /* 高亮绿色 */
+    --color-hiy: #ffff00; /* 高亮黄色 */
+    --color-hir: #ff0000; /* 高亮红色 */
+    --color-ord: #c0c0c0; /* 普通灰色 */
+    --color-blk: #555555; /* 黑色/暗灰色 */
+}
+
+/* --- 2. 基础布局调整 --- */
 html, body {
     height: 100%;
-    overflow: visible; /* 允许在需要时出现滚动条 */
+    overflow: visible;
 }
 
 body {
     display: flex;
-    flex-direction: column; /* 让 body 成为一个 flex 容器，方便 main-container 撑满 */
+    flex-direction: column;
     padding: 20px;
     box-sizing: border-box;
+    background-color: var(--mud-bg-color);
+    color: var(--mud-default-text-color); /* 继承 ws.css 的默认颜色 */
 }
 
-/* --- 主要容器 --- */
+/* --- 3. 主要容器与头部 --- */
 .main-container {
     width: 100%;
-    max-width: 1600px; /* 限制最大宽度，在大屏幕上更美观 */
+    max-width: 1600px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    flex-grow: 1; /* 占据 body 内所有剩余空间 */
-    min-height: 0; /* flex 布局技巧，防止溢出 */
+    flex-grow: 1;
+    min-height: 0;
 }
 
 .main-header {
@@ -31,19 +50,17 @@ body {
     align-items: center;
     margin-bottom: 20px;
     flex-shrink: 0;
-    border-bottom: 1px solid #333; /* 添加一条分割线，适应深色主题 */
+    border-bottom: 1px solid var(--mud-border-color);
     padding-bottom: 15px;
 }
-
-/* --- 颜色优化 --- */
 
 .main-title {
     margin: 0;
     font-size: 1.5em;
-    color: #ffff00; /* 改为 ws.css 中 room-title 使用的黄色，更醒目且经典 */
+    color: var(--mud-main-title-color);
 }
 
-/* --- 编辑器和面板 --- */
+/* --- 4. 编辑器和面板 --- */
 .editor-container {
     display: flex;
     gap: 20px;
@@ -55,8 +72,8 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    background-color: #0a0a0a; /* 比纯黑稍亮一点，以区分层次 */
-    border: 1px solid #333;
+    background-color: var(--mud-panel-bg-color);
+    border: 1px solid var(--mud-border-color);
     border-radius: 4px;
     padding: 15px;
 }
@@ -65,86 +82,144 @@ body {
     margin-top: 0;
     margin-bottom: 15px;
     font-size: 1.2em;
-    color: #808000; /* 副标题使用 ws.css 中 dialog-title 的橄榄绿色，与主题更协调 */
-    border-bottom: 1px solid #333;
+    color: var(--mud-sub-title-color);
+    border-bottom: 1px solid var(--mud-border-color);
     padding-bottom: 10px;
 }
 
-/* --- 输入框和预览区 --- */
-#input-area,
-#output-area {
+/* --- 5. 输入/输出区域 --- */
+#input-area {
     width: 100%;
     flex-grow: 1;
-    background-color: #000000; /* 使用纯黑背景 */
-    color: inherit; /* 继承 body 的绿色字体 */
+    background-color: var(--mud-bg-color);
+    color: inherit;
     border: 1px solid #2a2a2a;
     border-radius: 4px;
     padding: 10px;
-    /* 
-     * 【修改点 1】: 移除固定的等宽字体，使用 inherit 继承 ws.css 中 body 的字体
-     */
     font-family: inherit; 
     font-size: 16px;
+    line-height: 1.5;
     resize: none;
     box-sizing: border-box;
 }
 
-#output-area {
+#output-wrapper {
+    flex-grow: 1;
+    background-color: var(--mud-bg-color);
+    border: 1px solid var(--mud-border-color);
+    border-radius: 4px;
+    padding: 10px;
     overflow-y: auto;
+}
+
+#output-area {
+    font-size: 16px;
+    line-height: 1.5;
     white-space: pre-wrap;
-    word-break: break-all;
+    word-break: break-word;
+}
+
+.panel-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    flex-shrink: 0;
 }
 
 .instructions {
-    margin-top: 10px;
     font-size: 0.8em;
-    color: #666; /* 说明文字用灰色 */
+    color: #666;
 }
 
-/* --- 按钮样式 (MUD 风格) --- */
-#toggle-view-btn {
+.actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* --- 6. MUD 风格按钮 --- */
+.mud-button, .mud-button-small {
     background-color: #222;
-    color: #ffff00; /* 按钮文字颜色与主标题保持一致 */
+    color: var(--mud-main-title-color);
     border: 1px solid #444;
-    padding: 8px 16px;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 1em;
+    font-family: inherit;
     transition: background-color 0.2s, border-color 0.2s;
 }
-
-
-#toggle-view-btn:hover {
+.mud-button {
+    padding: 8px 16px;
+    font-size: 1em;
+}
+.mud-button-small {
+    padding: 5px 10px;
+    font-size: 0.9em;
+}
+.mud-button:hover, .mud-button-small:hover {
     background-color: #333;
     border-color: #666;
 }
 
-/* --- 全屏预览模式 --- */
+/* --- 7. MUD 文本样式 (核心) --- */
+#output-area .hic { color: var(--color-hic); }
+#output-area .hig { color: var(--color-hig); }
+#output-area .hiy { color: var(--color-hiy); }
+#output-area .hir { color: var(--color-hir); }
+#output-area .ord { color: var(--color-ord); }
+#output-area .blk { color: var(--color-blk); }
+
+/* <line> 标签的特殊样式 */
+#output-area .line {
+    display: block;
+    text-align: center;
+    margin: 1em 0;
+    color: var(--mud-sub-title-color);
+    position: relative;
+}
+#output-area .line::before,
+#output-area .line::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background-color: var(--mud-border-color);
+}
+#output-area .line::before {
+    left: 0;
+}
+#output-area .line::after {
+    right: 0;
+}
+
+/* --- 8. 全屏预览模式 --- */
 .editor-container.full-view-mode #input-panel {
     display: none;
 }
 
-
-/* 
- * 【修改点 2】: 添加移动端适配样式 
- * 当屏幕宽度小于等于 768px 时生效
- */
+/* --- 9. 移动端适配 --- */
 @media (max-width: 768px) {
     body {
-        padding: 10px; /* 在小屏幕上减小边距 */
+        padding: 10px;
     }
-
     .main-header {
-        flex-direction: column; /* 标题和按钮垂直排列 */
-        align-items: flex-start; /* 左对齐 */
-        gap: 10px; /* 增加垂直间距 */
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
     }
-
     .main-title {
-        font-size: 1.2em; /* 适当减小标题字号 */
+        font-size: 1.2em;
     }
-
     .editor-container {
-        flex-direction: column; /* 核心改动：将左右布局改为上下布局 */
+        flex-direction: column;
+        height: auto; /* 允许内容自然撑开高度 */
+    }
+    .panel {
+        min-height: 300px; /* 给面板一个最小高度 */
+    }
+    .panel-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
     }
 }

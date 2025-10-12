@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MUD 风格文本渲染器</title>
+    <title>MUD 风格文本实时渲染器</title>
+    <!-- 引用原版游戏的核心样式，以继承字体和基础颜色 -->
     <link rel="stylesheet" href="dist/ws.css">
+    <!-- 引用我们自己的布局和MUD标签增强样式 -->
     <link rel="stylesheet" href="dist/style.css">
 </head>
 <body>
@@ -12,13 +14,13 @@
     <div class="main-container">
         <div class="main-header">
             <h1 class="main-title">MUD 风格文本实时渲染器</h1>
-            <button id="toggle-view-btn">全屏预览</button>
+            <button id="toggle-view-btn" class="mud-button">全屏预览</button>
         </div>
         
         <div class="editor-container">
             <div class="panel" id="input-panel">
-                <h2>输入内容</h2>
-                <textarea id="input-area"><ord>小无相功</ord>
+                <h2>输入 MUD 文本</h2>
+                <textarea id="input-area" spellcheck="false"><ord>小无相功</ord>
 逍遥派灭世神功
 逍遥派的一门奇特武功，其主要特点是不着形相，无迹可寻，可以模仿别人的绝学
 <blk>当装备为基本内功时：
@@ -33,17 +35,28 @@
 内力消耗：2040	出招时间：4秒	冷却时间：20秒
 模仿敌人的上一个绝招，效果是你小无相功等级的85%，如果你的小无相品阶不低于对方技能的品阶并且是武器技能，你将学会这个绝招
 
-<hic>【无我】</hic>
+<hig>【无我】</hig>
 内力消耗：2040	出招时间：0.5秒	冷却时间：30秒
-使用你无相模仿并学会的绝招，效果是你小无相功等级的80%</textarea>
-                <div class="instructions">
-                    支持的标签: &lt;ord&gt;, &lt;blk&gt;, &lt;hic&gt;, &lt;line&gt;, &lt;hig&gt;, &lt;hiy&gt;, &lt;hir&gt; 等
+使用你无相模仿并学会的绝招，效果是你小无相功等级的80%
+
+<hiy>这是一个高亮黄色的例子。</hiy>
+<hir>这是一个高亮红色的例子。</hir>
+</textarea>
+                <div class="panel-footer">
+                    <div class="instructions">
+                        支持标签: &lt;ord&gt;, &lt;blk&gt;, &lt;hic&gt;, &lt;hig&gt;, &lt;hiy&gt;, &lt;hir&gt;, &lt;line&gt; 等
+                    </div>
+                    <div class="actions">
+                        <button id="copy-btn" class="mud-button-small">复制HTML</button>
+                        <button id="clear-btn" class="mud-button-small">清空</button>
+                    </div>
                 </div>
             </div>
             <div class="panel" id="output-panel">
                 <h2>实时预览</h2>
-                <!-- 【优化点】将 <pre> 换成 <div>，因为JS会手动处理换行 -->
-                <div id="output-area"></div>
+                <div id="output-wrapper">
+                    <div id="output-area"></div>
+                </div>
             </div>
         </div>
     </div>
