@@ -8,7 +8,14 @@ const editorContainer = document.querySelector('.editor-container');
 function renderOutput() {
     // 检查 inputArea 和 outputArea 是否存在，避免出错
     if (inputArea && outputArea) {
-        outputArea.innerHTML = inputArea.value;
+        let content = inputArea.value;
+        
+        // 【修改点】使用正则表达式为 <line> 标签内的内容前后添加空格
+        //  - (.*?) 匹配标签内的任意字符（非贪婪模式）
+        //  - '$1' 是对匹配到的内容的引用
+        content = content.replace(/<line>(.*?)<\/line>/g, '<line> $1 </line>');
+
+        outputArea.innerHTML = content;
     }
 }
 
