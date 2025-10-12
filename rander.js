@@ -6,19 +6,18 @@ const editorContainer = document.querySelector('.editor-container');
 
 // 渲染函数
 function renderOutput() {
-    // 检查 inputArea 是否存在，避免在DOM加载完成前执行出错
-    if (inputArea) {
+    // 检查 inputArea 和 outputArea 是否存在，避免出错
+    if (inputArea && outputArea) {
         outputArea.innerHTML = inputArea.value;
     }
 }
 
-// 监听输入
-// 同样检查元素是否存在
+// 监听输入事件，实现实时更新
 if (inputArea) {
     inputArea.addEventListener('input', renderOutput);
 }
 
-// --- 切换按钮的事件监听 ---
+// 监听切换按钮的点击事件
 if (toggleBtn) {
     toggleBtn.addEventListener('click', () => {
         // 切换 'full-view-mode' 类
@@ -33,6 +32,4 @@ if (toggleBtn) {
     });
 }
 
-// 页面加载时首次渲染
-// 使用 DOMContentLoaded 可以确保所有HTML元素都已加载完毕
-document.addEventListener('DOMContentLoaded', renderOutput);
+renderOutput();
