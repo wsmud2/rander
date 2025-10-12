@@ -7,27 +7,78 @@
     <!-- 唯一的样式来源 -->
     <link href="dist/ws.css" rel="stylesheet" />
     <style>
-        /* 仅保留最基本的布局样式，确保页面结构正确 */
+        /* 基础布局样式 */
         html, body { height: 100%; overflow: hidden; }
         #app-container { display: flex; flex-direction: column; height: 100vh; }
         .content-message { flex: 1; overflow-y: auto; padding: 10px; }
         .content-message pre { margin: 0; white-space: pre-wrap; font-family: inherit; font-size: inherit; }
-        #controls { padding: 10px; background-color: #111; border-top: 1px solid #333; }
-        #source-input { width: 100%; height: 120px; background-color: #222; color: #ddd; border: 1px solid #444; padding: 8px; font-family: monospace; resize: vertical; }
-        #render-btn { width: 100%; padding: 10px; margin-top: 10px; background-color: #555; color: #ddd; border: none; font-weight: bold; cursor: pointer; }
+        
+        /* 控制区域样式 */
+        #controls { 
+            padding: 10px; 
+            background-color: #111; 
+            border-top: 1px solid #333; 
+            /* 添加过渡效果，使折叠更平滑 */
+            transition: all 0.3s ease;
+        }
+        
+        /* 输入框样式 */
+        #source-input { 
+            width: 100%; 
+            height: 120px; 
+            background-color: #222; 
+            color: #ddd; 
+            border: 1px solid #444; 
+            padding: 8px; 
+            font-family: monospace; 
+            resize: vertical; 
+            margin-top: 10px; /* 与按钮保持间距 */
+        }
+
+        /* 新增：折叠/展开按钮的样式 */
+        #toggle-controls-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #555;
+            color: #ddd;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        /* 新增：当 controls 容器有 collapsed 类时的样式 */
+        #controls.collapsed {
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+        #controls.collapsed #source-input {
+            display: none; /* 隐藏输入框 */
+        }
+
     </style>
 </head>
 <body>
     <div id="app-container">
-        <!-- 结构与原版一致 -->
+        <!-- 显示区域保持不变 -->
         <div class="content-message">
             <pre id="render-output"></pre>
         </div>
+
+        <!-- 控制区域结构修改 -->
         <div id="controls">
+            <!-- 新增：折叠/展开按钮，以适配JS -->
+            <button id="toggle-controls-btn" aria-expanded="true">
+                <span class="toggle-text">隐藏输入框</span>
+            </button>
+            <!-- 输入框保持不变 -->
             <textarea id="source-input" spellcheck="false" placeholder="在此粘贴从游戏复制的原始文本..."></textarea>
-            <button id="render-btn">渲染</button>
+            <!-- 移除：旧的渲染按钮 -->
+            <!-- <button id="render-btn">渲染</button> -->
         </div>
     </div>
+
+    <!-- JS引用保持不变 -->
     <script src="dist/renderer.js" defer></script>
 </body>
 </html>
