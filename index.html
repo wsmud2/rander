@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <title>MUD 渲染模拟器 (美化版)</title>
+    <title>MUD 渲染模拟器 (美化对齐版)</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link href="dist/ws.css" rel="stylesheet" />
@@ -98,8 +98,14 @@
             font-weight: bold;
             font-size: 16px;
             cursor: pointer;
-            text-align: center;
             transition: background-color 0.2s ease; /* 平滑过渡效果 */
+            
+            /* --- 修正开始 --- */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* text-align: center;  <-- 这个可以移除了，因为flex布局已经处理了水平居中 */
+            /* --- 修正结束 --- */
         }
 
         /* 按钮悬停效果 */
@@ -117,9 +123,13 @@
             height: 8px;
             border-bottom: 2px solid #f0f0f0;
             border-right: 2px solid #f0f0f0;
-            /* 初始状态：箭头向上 (表示可以折叠) */
-            transform: translateY(-70%) rotate(-135deg);
             transition: transform 0.3s ease-in-out;
+
+            /* --- 修正开始 --- */
+            /* 初始状态：箭头向上 (表示可以折叠) */
+            /* 使用 translateY(-50%) 来精确垂直居中，不再使用 -70% */
+            transform: translateY(-50%) rotate(-135deg);
+            /* --- 修正结束 --- */
         }
 
         /* 当 controls 容器折叠时的样式 */
@@ -132,7 +142,10 @@
         }
         /* 折叠时，旋转箭头图标向下 (表示可以展开) */
         #controls.collapsed #toggle-controls-btn::after {
-            transform: translateY(-40%) rotate(45deg);
+            /* --- 修正开始 --- */
+            /* 同样使用 translateY(-50%) 来确保居中 */
+            transform: translateY(-50%) rotate(45deg);
+            /* --- 修正结束 --- */
         }
 
         /* --- 美化部分结束 --- */
